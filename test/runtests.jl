@@ -12,9 +12,11 @@ end
     using Test
 
     # Outside of Pluto this must return nothing
-    @test Core.eval(Main, :(@plutoinclude "something")) === nothing
+    @test Core.eval(@__MODULE__, :(@plutoinclude "something")) === nothing
     @test is_inside_pluto() === false
 
     # Test the extract_kwargs throws
     @test_throws "@plutoinclude macro is not supported" extract_kwargs((:a, :b), Main)
 end
+
+@safetestset "With Pluto Session" begin include("with_pluto_session.jl") end
