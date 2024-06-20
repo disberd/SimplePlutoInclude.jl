@@ -27,7 +27,7 @@ An example use of `@plutoinclude` is fed a path as input based on a variable def
 ![image](https://github.com/disberd/SimplePlutoInclude.jl/assets/12846528/3eabe137-ca4a-46a3-a68b-a1c66a18d1aa)
 
 > [!WARNING]
-> When specifying the path as an expression depending on variables/functions defined in the notebook itself, the behavior of the `@plutoinclude` macro might behave strangely as the code loading is happening during macro expansion. The following two _strange_ behaviors are important to know about when using variables/functions defined within the notebook as input to the macro:
+> When specifying the path as an expression depending on variables/functions defined in the notebook itself, the `@plutoinclude` macro might behave strangely as the code loading is happening during macro expansion. The following two _strange_ behaviors are important to know about when using variables/functions defined within the notebook as input to the macro:
 > - The cell containing the macro will error when running for the first time after opening a notebook. This is because the symbol/function is evaluated during the first macro expansion, so **before** the cell definining the symbol/function is first executed. This can easily be solved by manually re-running the cell with `@plutoinclude`.
 > - The `@plutoinclude` macro will not reload the contents of the file upon _reactive_ run (i.e. when the cell is ran because one of its dependencies has been changed). This is because the macro is not _expanded_/_compiled_ again upon _reactive_ run, so the module containing the _included_ file will not be re-created. 
 
@@ -36,4 +36,5 @@ The names to be introduced into the Pluto workspace are simply extracted from th
 
 By default, the call to `Base.names` will have the `all` keyword argument set to true in order to export all names defined directly within the _included_ file.
 
-The `@plutoinclude` macro accepts as additional inputs 
+The `@plutoinclude` macro accepts as additional inputs any number of assignments expression of the form `name = value` where `value` must be a `Bool`. These expression are parsed at the beginning of the macro expansion and grouped as `kwargs` that are passed to the `Base.names` call. One could example set the `all` kwarg to false as in the example below:
+
