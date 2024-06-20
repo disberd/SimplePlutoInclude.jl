@@ -42,6 +42,10 @@ end
 # ╔═╡ 289fdcc9-f161-41a9-aaac-1bc91b47d1ec
 exported_var
 
+# ╔═╡ 93467a75-d63c-4d78-9703-701238f76a0c
+# This will only export the variable that is explicitly marked as `exported` in the file
+@plutoinclude "imported_files/imported_notebook.jl" all = false
+
 # ╔═╡ Cell order:
 # ╠═14f7c45f-d1e7-40dc-aacf-fccc286bd784
 # ╠═b9902c25-6f7e-4760-b182-82029b4c87bd
@@ -51,3 +55,4 @@ exported_var
 # ╠═b8b6e3dd-f761-4ecf-bd0e-1f27971d51df
 # ╠═a24520c0-ab0a-4010-8a60-5130ce4789a3
 # ╠═289fdcc9-f161-41a9-aaac-1bc91b47d1ec
+# ╠═93467a75-d63c-4d78-9703-701238f76a0c

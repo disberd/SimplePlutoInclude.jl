@@ -37,5 +37,11 @@ end
     end
     @test exported_names == [:bind_var, :nonbind_var]
 
+    # We test the warning if no names are imported by the macro
+    last_logs = nb.cells[end].logs[1]["msg"] |> first
+    last_output = nb.cells[end].output.body
+    @test contains(last_logs, "No names were extracted from the generated module.")
+    @test contains(last_output, "No names were extracted from the generated module.")
+
     SessionActions.shutdown(ss, nb)
 end
