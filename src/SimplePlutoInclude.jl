@@ -49,6 +49,7 @@ function plutoinclude(path::AbstractString, caller::Module; kwargs...)
     # Create module
     generated_module = Core.eval(caller, modex)
     nms = extract_names(generated_module; kwargs...)
+    isempty(nms) && return nothing
     nms_expr = map(nm -> Expr(:., nm), nms)
     modexpr = Expr(:., fullname(caller)..., modname)
     ex = Expr(:import, Expr(:(:), modexpr, nms_expr...))
