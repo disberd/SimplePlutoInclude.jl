@@ -24,7 +24,7 @@ The target file can be any valid julia file (including another Pluto notebook), 
 The path to the file to be included can be specified either as a plain `String`, or as any expression that will evaluate to a String in the caller module (i.e. the Pluto workspace where the `@plutoinclude` macro is called).
 
 An example use of `@plutoinclude` is fed a path as input based on a variable defined in the notebook is the following:
-
+![image](https://github.com/disberd/SimplePlutoInclude.jl/assets/12846528/3eabe137-ca4a-46a3-a68b-a1c66a18d1aa)
 
 > [!WARNING]
 > When specifying the path as an expression depending on variables/functions defined in the notebook itself, the behavior of the `@plutoinclude` macro might behave strangely as the code loading is happening during macro expansion. The following two _strange_ behaviors are important to know about when using variables/functions defined within the notebook as input to the macro:
