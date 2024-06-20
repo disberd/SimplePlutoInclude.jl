@@ -1,3 +1,4 @@
 .vscode/
 test*.jl
+!test/test*.jl
 Manifest.toml
