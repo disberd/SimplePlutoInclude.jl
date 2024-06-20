@@ -1,4 +1,16 @@
 using SafeTestsets
+import Pkg
+# We instantiate the test env
+function instantiate(path)
+    curr_proj = Base.active_project()
+    try
+        Pkg.activate(path)
+        Pkg.instantiate()
+    finally
+        Pkg.activate(curr_proj)
+    end
+end
+instantiate(@__DIR__)
 
 @safetestset "Aqua" begin
     using SimplePlutoInclude
