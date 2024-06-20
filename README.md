@@ -37,4 +37,8 @@ The names to be introduced into the Pluto workspace are simply extracted from th
 By default, the call to `Base.names` will have the `all` keyword argument set to true in order to export all names defined directly within the _included_ file.
 
 The `@plutoinclude` macro accepts as additional inputs any number of assignments expression of the form `name = value` where `value` must be a `Bool`. These expression are parsed at the beginning of the macro expansion and grouped as `kwargs` that are passed to the `Base.names` call. One could example set the `all` kwarg to false as in the example below:
+![image](https://github.com/disberd/SimplePlutoInclude.jl/assets/12846528/3abd2ac3-ce6d-40ac-8e54-a761ae205a6a)
+
+> [!NOTE]
+> Setting `all` to `false` will not export any name defined in the _included_ file unless something is explicitly marked with `export` or `public` within the file.
 
