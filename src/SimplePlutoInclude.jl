@@ -9,7 +9,8 @@ Main.PlutoRunner isa Module &&
 
 function extract_names(m::Module; imported=false, all=true, kwargs...)
     nms = names(m; all, imported, kwargs...)
-    excluded = (:PLUTO_PROJECT_TOML_CONTENTS, :PLUTO_MANIFEST_TOML_CONTENTS, :eval, :include)
+    # Exclude PlutoPkg names and `eval` and `include` from exporting
+    excluded = (:PLUTO_PROJECT_TOML_CONTENTS, :PLUTO_MANIFEST_TOML_CONTENTS, :eval, :include, Symbol("@bind"))
     filter(nms) do nm
         nm ∉ excluded && !Base.isgensym(nm)
     end
@@ -17,7 +18,9 @@ end
 
 function extract_kwargs(inputs, caller::Module)
     kwargs = Dict{Symbol,Bool}()
+    # Create a function that will evaluate the path expression in the caller module
     resolve_path(ex) = Core.eval(caller, ex) |> abspath
+    # If there is only one input, simply assume no kwargs
     if length(inputs) === 1
         return only(inputs) |> resolve_path, kwargs
     end
@@ -34,13 +37,21 @@ The supported inputs to the macro are:
         @assert value isa Bool "The kwarg associated to the name $name does not have a Boolean value."
         kwargs[name] = value
     end
+    # Find the input arg which shall be interpreted as path
     path_idx = setdiff(1:length(inputs), kwargs_idxs) |> only
-    path = Core.eval(caller, inputs[path_idx]) |> abspath
+    path = resolve_path(inputs[path_idx])
     return path, kwargs
 end
 
+# This function will just warns that no names were extracted
+function warn_no_names()
+    msg = "No names were extracted from the generated module.\nConsider setting the `all` kwarg to `true` or specifically mark names with `export` within the included file"
+    @warn msg
+    "WARNING: $msg" |> Text
+end
+
 function plutoinclude(path::AbstractString, caller::Module; kwargs...)
-    is_inside_pluto() || return nothing
+    is_inside_pluto() || return nothing # Do nothing outside of Pluto
     @assert isabspath(path) "The plutoinclude function must be called with an absolute path as input"
     modname = Symbol(basename(path)) |> gensym
     modex = :(module $modname
@@ -48,8 +59,10 @@ function plutoinclude(path::AbstractString, caller::Module; kwargs...)
     end)
     # Create module
     generated_module = Core.eval(caller, modex)
+    # Extract names
     nms = extract_names(generated_module; kwargs...)
-    isempty(nms) && return nothing
+    # Return nothing if no names have been extracted
+    isempty(nms) && return :($warn_no_names())
     nms_expr = map(nm -> Expr(:., nm), nms)
     modexpr = Expr(:., fullname(caller)..., modname)
     ex = Expr(:import, Expr(:(:), modexpr, nms_expr...))
