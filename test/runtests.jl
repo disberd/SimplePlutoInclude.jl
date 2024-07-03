@@ -14,7 +14,7 @@ end
 
     # Outside of Pluto this must return nothing
     @test Core.eval(@__MODULE__, :(@plutoinclude "something")) === nothing
-    @test is_inside_pluto() === false
+    @test is_inside_pluto(@__FILE__) === false
 
     # Test the extract_kwargs throws
     @test_throws "@plutoinclude macro is not supported" extract_kwargs((:a, :b))

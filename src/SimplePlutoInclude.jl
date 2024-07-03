@@ -70,9 +70,12 @@ function Base.show(io::IO, mime::MIME"text/html", status::DifferentFile)
 end
 
 # Custom function to check if we are inside Pluto
-is_inside_pluto() = isdefined(Main, :PlutoRunner) && 
-Main.PlutoRunner isa Module && 
-"Pluto" in Main.PlutoRunner |> pkgdir |> splitpath
+is_inside_pluto(lnn::LineNumberNode) = is_inside_pluto(lnn.file |> String)
+function is_inside_pluto(calling_file::String)
+    parts = split(calling_file, "#==#")
+    length(parts) === 2 || return false
+    return length(last(parts)) === 36
+end
 
 function get_module_container()
     isdefined(Main, CONTAINER_NAME) && return getproperty(Main, CONTAINER_NAME)::Module
@@ -173,7 +176,7 @@ function process_generated_module(generated_module::Module; path, target_ex, inp
         inner_module
     )
     # Add the helpers inside the module
-    Core.eval(target_module, :(plutoinclude_helpers = pluoinclude_helpers))
+    Core.eval(target_module, :(plutoinclude_helpers = $pluoinclude_helpers))
     return target_module
 end
 
@@ -278,7 +281,7 @@ This often simplifies interactive development as one does not need to always pre
 > `@ingredients` also tracks changes in the file and rerun dependent cells when updating the file. While a mode supporting `Revise` is planned for the next release of SimplePlutoInclude, automatic reload of dependent cells is not planned for this macro as the reload of the file is intended to only be done manually to accidentally avoid triggering long-running cells each time a file is changed. 
 """
 macro plutoinclude(args...)
-    is_inside_pluto() || return nothing # Do nothing outside of Pluto
+    is_inside_pluto(__source__) || return nothing # Do nothing outside of Pluto
     caller = __module__
     target_ex, input_kwargs = extract_kwargs(args)
     val_from_caller = Core.eval(caller, target_ex)
