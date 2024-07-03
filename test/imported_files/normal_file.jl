@@ -1,1 +1,1 @@
-normal_var = 10
+normal_var = 12
