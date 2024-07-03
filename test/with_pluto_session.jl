@@ -1,5 +1,5 @@
 @testitem "With Pluto Session" begin
-    include(joinpath(@__DIR__, "helpers.jl"))
+    include(joinpath(@__DIR__, "with_pluto_helpers.jl"))
     notebook_path = joinpath(@__DIR__, "test_notebook.jl")
     ss = ServerSession(; options)
     nb = SessionActions.open(ss, notebook_path; run_async=false)
