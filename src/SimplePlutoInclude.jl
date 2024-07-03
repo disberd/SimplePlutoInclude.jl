@@ -173,7 +173,7 @@ function process_generated_module(generated_module::Module; path, target_ex, inp
         inner_module
     )
     # Add the helpers inside the module
-    target_module.plutoinclude_helpers = pluoinclude_helpers
+    Core.eval(target_module, :(plutoinclude_helpers = pluoinclude_helpers))
     return target_module
 end
 
