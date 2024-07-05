@@ -27,30 +27,33 @@
         # We test the warning if no names are imported by the macro
         @test has_log_and_body_msg(nb.cells[end], "The macro did not import any name"; level="Error")
 
+        path_cell_idx = 7
+        plutoinclude_cell_idx = 8
+
         # We check the warning when a file is updated a warning is sent. For some reason doing this only once does not make the test pass
         for _ in 1:2
             normal_file_path = eval_in_nb(sn, :symbol_path)
             touch(normal_file_path);
-            update_run!(ss, nb, nb.cells[5]); # This is the cell which puts the path in a variable
+            update_run!(ss, nb, nb.cells[path_cell_idx]); # This is the cell which puts the path in a variable
         end
-        @test has_log_and_body_msg(nb.cells[6], "The file was updated"; level="Warn");
-        original_code = nb.cells[5].code
+        @test has_log_and_body_msg(nb.cells[plutoinclude_cell_idx], "The file was updated"; level="Warn");
+        original_code = nb.cells[path_cell_idx].code
 
         # We test that changing file to a valid one gives a corresponding warning
-        nb.cells[5].code = original_code;
-        update_run!(ss, nb, nb.cells[5]); 
-        update_run!(ss, nb, nb.cells[6]); 
-        nb.cells[5].code = "symbol_path = \"imported_files/export_file.jl\" |> abspath"
-        update_run!(ss, nb, nb.cells[5]); 
-        @test has_log_and_body_msg(nb.cells[6], "The target points to a different file"; level="Warn");
+        nb.cells[path_cell_idx].code = original_code;
+        update_run!(ss, nb, nb.cells[path_cell_idx]); 
+        update_run!(ss, nb, nb.cells[plutoinclude_cell_idx]); 
+        nb.cells[path_cell_idx].code = "symbol_path = \"imported_files/dummy_file.jl\" |> abspath"
+        update_run!(ss, nb, nb.cells[path_cell_idx]); 
+        @test has_log_and_body_msg(nb.cells[plutoinclude_cell_idx], "The target points to a different file"; level="Warn");
 
         # We test that changing file to an invalid one gives a corresponding warning
-        nb.cells[5].code = original_code;
-        update_run!(ss, nb, nb.cells[5]); 
-        update_run!(ss, nb, nb.cells[6]); 
-        nb.cells[5].code = "symbol_path = \"imported_files/nonexistent.jl\" |> abspath"
-        update_run!(ss, nb, nb.cells[5]); 
-        @test has_log_and_body_msg(nb.cells[6], "does not seem to point to an existing file"; level="Error");
+        nb.cells[path_cell_idx].code = original_code;
+        update_run!(ss, nb, nb.cells[path_cell_idx]); 
+        update_run!(ss, nb, nb.cells[plutoinclude_cell_idx]); 
+        nb.cells[path_cell_idx].code = "symbol_path = \"imported_files/nonexistent.jl\" |> abspath"
+        update_run!(ss, nb, nb.cells[path_cell_idx]); 
+        @test has_log_and_body_msg(nb.cells[plutoinclude_cell_idx], "does not seem to point to an existing file"; level="Error");
     finally
         SessionActions.shutdown(ss, nb)
     end

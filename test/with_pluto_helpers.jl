@@ -24,7 +24,12 @@ function has_log_msg(cell, needle; level = nothing)
 end
 function has_body_msg(cell, needle)
     body = cell.output.body
-    contains(body, needle)
+    if body isa Dict{Symbol, Any}
+        body = body[:msg]
+    end
+    valid = contains(body, needle)
+    valid || @info "Body mismatch" body
+    return valid
 end
 function has_log_and_body_msg(cell, needle; level = nothing)
     return has_body_msg(cell, needle) && has_log_msg(cell, needle; level)
