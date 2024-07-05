@@ -1,7 +1,7 @@
 name = "SimplePlutoInclude"
 uuid = "6f00a2c5-ea4a-46bf-9183-91b7b57a087f"
 authors = ["Alberto Mengali <disberd@gmail.com>"]
-version = "0.2.0-DEV"
+version = "0.2.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
