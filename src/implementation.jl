@@ -180,7 +180,9 @@ function plutoinclude(target_ex, val_from_caller; input_kwargs)
     include($path)
     end)
     # We create a module inside our own custom container outside of Pluto so it's not garbage collected by Pluto
-    generated_module = Core.eval(get_module_container(), modex)
+    generated_module = Base.redirect_stderr(Pipe()) do
+        Core.eval(get_module_container(), modex)
+    end
     # This process the generated module to extract the target module which contains a plutoinclude_helpers namedtuple.
     m = process_generated_module(generated_module; path, target_ex, input_kwargs)
     # We put the module inside a temporary variable in Main
