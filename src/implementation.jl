@@ -196,7 +196,7 @@ function expr_from_module(m::Module)
         extracted_names,
         target_ex,
         compiled_path
-    ) = getproperty(m, :plutoinclude_helpers)
+    ) = m.plutoinclude_helpers
     path_symbol = Symbol(compiled_path)
     # Return nothing if no names have been extracted
     isempty(extracted_names) && return :($NoNames($compiled_path))
