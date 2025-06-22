@@ -184,9 +184,9 @@ function plutoinclude(target_ex, val_from_caller; input_kwargs)
         Core.eval(get_module_container(), modex)
     end
     # This process the generated module to extract the target module which contains a plutoinclude_helpers namedtuple.
-    m = process_generated_module(generated_module; path, target_ex, input_kwargs)
+    m = invokelatest(process_generated_module, generated_module; path, target_ex, input_kwargs)
     # We put the module inside a temporary variable in Main
-    return expr_from_module(m)
+    return invokelatest(expr_from_module, m)
 end
 
 # the module_name_in_pluto kwarg will contain the name of the module in Pluto if this is called from `@plutousing` and `nothing` if called from `@plutoinclude`
